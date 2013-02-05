@@ -85,7 +85,49 @@ def alg3(result, m=2):
     
     return result
 
+def alg4(x,result,x_red):
 
+    D = x
+    x = x_red
+    noc, dim = D.shape
+    noc_x_1 = np.ones((noc,),dtype=int)
+    Mdist = np.zeros((D.shape[0],D.shape[0]))
+    dim_x_1 = np.ones((dim,))
+
+    for i in range(noc):
+        xD = D[i,:]
+        Diff = D - np.tile(xD[noc_x_1,:].T,(D.shape[1],1)).T
+        Mdist[:,i] = np.sqrt(np.dot(Diff**2,dim_x_1))
+
+    e, tot = 0,0
+    for j in range(1,noc):
+        d  = Mdist[:j,j]
+        print d.shape
+        tot += np.sum(d)
+        ind = find(d!=0)
+        xd = -x[:j,:] + x[j*np.ones((j-1,),dtype=int),:]
+        print xd.shape
+        ee = d - np.sqrt(np.sum(xd**2,axis=1)).T
+        e += np.sum((ee[ind]**2)/d[ind])
+    e = e/tot
+    result.e = e
+    return result
+#
+#def alg5():
+#    pass
+
+def alg6(result, x_red, c_red, c, m=2):
+    x = x_red
+    v = c_red
+    f = result.f0
+    d = np.zeros((x.shape[0],c))
+    for j in range(c):
+        xv = x-dot(np.ones((len(x),1)),v[j,:])
+        d[:,j] = np.sum(dot(xv,np.eye(2))*xv,axis=1)
+    d = (d+1e-10)**(-1/(m-1))
+    f0 = d/(dot(np.sum(d,axis=1),np.ones((1,c))))
+    ff = f0
+    
 
 
 if __name__ == "__main__":
@@ -132,4 +174,11 @@ if __name__ == "__main__":
     xlabel("PC1")
     ylabel("PC2")
     title("PCA projection")
+    
+    perfclass = np.sum(misclass)/len(C)*100
+    plot(c_red[:,0],c_red[:,1],'k*')
     show()
+#    result = alg4(x,result,x_red)
+    
+    
+    
